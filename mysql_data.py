@@ -1,6 +1,12 @@
 '''
 This Python Code will be the one which dynamically stores the data of the Wemo
 Switch when it is executed. The data is stored on average every 2-3 seconds.
+
+This code should not be plagarized nor used for credential/academic purposes
+unless stated otherwise by the owner. Modification and usage is accepted upon
+approval.
+
+For more details contact: yoshiki.shoji@mail.utoronto.ca
 '''
 
 # PYMYSQL MODULES
