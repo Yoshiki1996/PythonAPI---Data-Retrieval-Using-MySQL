@@ -5,6 +5,12 @@ all the Wemo Switches which have been named Insight(number), where (number)
 indicates the switch number. The most useful table will be from the 'Insight(number)'
 table which has the information regarding how much current is drained by the appliance,
 the total on time, how much time elapses from the ON and OFF state, and the date
+
+This code should not be plagarized nor used for credential/academic purposes
+unless stated otherwise by the owner. Modification and usage is accepted upon
+approval.
+
+For more details contact: yoshiki.shoji@mail.utoronto.ca
 '''
 
 # PYMYSQL MODULES
