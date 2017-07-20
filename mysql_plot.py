@@ -19,6 +19,12 @@ currentpower = 0[W]. It will neglect all the other points with 0[W] until there
 is a change in current - this interval will then be stored. It is the same plot#
 as MAKE_PLOT(X,Y) reducing the amount of unnecessary data.
 
+This code should not be plagarized nor used for credential/academic purposes
+unless stated otherwise by the owner. Modification and usage is accepted upon
+approval.
+
+For more details contact: yoshiki.shoji@mail.utoronto.ca
+
 '''
 
 # NUMPY MODULES 
