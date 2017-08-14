@@ -1,10 +1,12 @@
 '''
 This Python Code will generate the respective tables which are stored
 into a MySQL database called, 'DATA'. It will automatically retrieve
-all the Wemo Switches which have been named Insight(number), where (number) 
-indicates the switch number. The most useful table will be from the 'Insight(number)'
-table which has the information regarding how much current is drained by the appliance,
+all the Wemo Switches which have its own respective names. 
+
+The most useful table will be the ones with the switch names. It contains
+the information regarding how much current is drained by the appliance,
 the total on time, how much time elapses from the ON and OFF state, and the date
+and so forth.
 '''
 
 # PYMYSQL MODULES
