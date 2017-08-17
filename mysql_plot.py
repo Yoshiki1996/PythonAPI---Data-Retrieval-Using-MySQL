@@ -179,7 +179,7 @@ class PLOT:
         
         return currentpower
     
-    def MAKE_PLOT(self,time_del,current_power):
+    def MAKE_PLOT(self,time_del,current_power,switch_name):
         '''A function which generates currentpower vs. time plot'''
         
         # Using matplotlib to plot currentpower[W] vs time[s]
@@ -188,10 +188,11 @@ class PLOT:
         Y = list(current_power)
         
         # Show plot
-        plt.plot(X,Y)
+        plt.plot(X,Y,label = switch_name)
         plt.ylabel('currentpower [W]')
         plt.xlabel('time [s]')
         plt.title('currentpower vs. time')
+        plt.legend(bbox_to_anchor=(0.75, 0.9), loc=2, borderaxespad=0.)
         plt.show()
     
     def fetch_data(self,switch,start_index,end_index):
@@ -265,7 +266,7 @@ class PLOT:
         
         X = np.cumsum(X)
         Y = list(Y)
-        XP,YP = CONV_NPARRAY(X,Y)
+        XP,YP = self.CONV_NPARRAY(X,Y)
         XP_SMOOTH = np.linspace(XP.min(),XP.max(),spacing)
         YP_SMOOTH = spline(XP,YP,XP_SMOOTH)
         
@@ -302,7 +303,8 @@ class PLOT:
         # Placeholders
         XP = np.append(XP,0)
         YP = np.append(YP,0)
-        # First column: X # Seconds column: Y
+        # First column: X 
+        # Seconds column: Y
         xy_pairs = np.vstack([XP,YP]).T
         
         i = 0
@@ -352,10 +354,10 @@ class PLOT:
         '''This function obtains the final data points using the smoothing 
         function, spline, provided by Python scipy module'''
         
-        XP_SMOOTH,YP_SMOOTH = smooth(X,Y,200)
+        XP_SMOOTH,YP_SMOOTH = self.smooth(X,Y,200)
         X_REFINED,Y_REFINED = refined_data(XP_SMOOTH,YP_SMOOTH)
         XY_TEMP = np.vstack((X_REFINED,Y_REFINED)).T
-        XY = np.array(xintervals(XP,YP))
+        XY = np.array(self.xintervals(XP,YP))
         
         len_history = []
         i = XY_TEMP.shape[0]-1
@@ -398,7 +400,7 @@ class PLOT:
     def PLOT_FINALDATA_SMOOTHING(self,XP,YP):
         '''function which plots the points using python spline'''
         
-        XY = final_data(XP,YP)
+        XY = self.final_data(XP,YP)
         x,y = XY[np.argsort(XY[:,0])].T
         # print((XY[np.argsort(XY[:,0])].T).shape[1])
         plt.plot(x,y)
@@ -407,17 +409,25 @@ class PLOT:
         plt.title('currentpower vs time')
         plt.show()
     
-    def PLOT_FINALDATA(self,XP,YP):
+    def PLOT_FINALDATA(self,XP,YP,switch_name):
         
-        XY1 = xintervals(XP,YP)
-        XY2 = remove_xintervals(XP,YP)
-        XY = np.vstack((XY1,XY2))
-        x,y = XY[np.argsort(XY[:,0])].T
-        # print((x,y))
-        plt.plot(x,y)
+        XY1 = self.xintervals(XP,YP)
+        XY2 = self.remove_xintervals(XP,YP)
+        if XY1 == []:
+            x,y = XY2[np.argsort(XY2[:,0])].T
+            # print((x,y))
+            plt.plot(x,y,label = switch_name)
+            
+        else:
+            XY = np.vstack((XY1,XY2))
+            x,y = XY[np.argsort(XY[:,0])].T
+            plt.plot(x,y,label = switch_name)
+        
         plt.ylabel('currentpower [W]')
         plt.xlabel('time [s]')
         plt.title('currentpower vs time')
+        # Place a legend 
+        plt.legend(bbox_to_anchor=(0.75, 0.9), loc=2, borderaxespad=0.)
         plt.show()
     
     def CREATE_PLOT(self):
@@ -459,49 +469,39 @@ class PLOT:
                     
                     # Generate the plot from the last stored value
                     X,Y = self.fetch_data(switch,start_index,end_index)
+                    print(X,Y)
                     
-                    ###
-                    # Generate the plot which gives the smooth curves
+                    '''Generate the plot which gives the smooth curves'''
                     
-                    # XP_SMOOTH,YP_SMOOTH = smooth(X,Y,200)
+                    # XP_SMOOTH,YP_SMOOTH = self.smooth(X,Y,200)
                     # plt.plot(XP_SMOOTH,YP_SMOOTH)
                     # plt.show()
+
+
+                    '''Generate the points where the max/min values lie from the 
+                       Smoothed out curve.'''
                     
-                    ###
-                    
-                    
-                    
-                    ### 
-                    # Generate the points where the max/min values lie from the 
-                    # Smoothed out curve.
-                    
-                    # X_REFINED,Y_REFINED = refined_data(XP_SMOOTH,YP_SMOOTH)
+                    # X_REFINED,Y_REFINED = self.refined_data(XP_SMOOTH,YP_SMOOTH)
                     # plt.plot(X_REFINED,Y_REFINED,'ro')
-                    # plt.plot(XP_SMOOTH,YP_SMOOTH)  
-                    
-                    ###
-                    
+                    # plt.plot(XP_SMOOTH,YP_SMOOTH) 
+                    # plt.show() 
                     
                     
-                    ###
-                    # Generate the actual plot from the Wemo Devices
+                    '''Generate the actual plot from the Wemo Devices'''
                     
-                    # MAKE_PLOT(X,Y)
+                    # self.MAKE_PLOT(X,Y,switch[0])
                     
-                    ###
-                    # Generate the final plot using the spline function
                     
-                    # PLOT_FINALDATA_SMOOTHING(X,Y)
+                    '''Generate the final plot using the spline function'''
                     
-                    ###
+                    # self.PLOT_FINALDATA_SMOOTHING(X,Y)
+
+
+                    '''Generate the final plot containing all the ON state points
+                       and only the beginning and ending points when currentpower = 0'''
                     
-                    ###
-                    # Generate the final plot containing all the ON state points
-                    # and only the beginning and ending points when currentpower = 0
-                    
-                    self.PLOT_FINALDATA(X,Y)
-                    
-                    ###
+                    self.PLOT_FINALDATA(X,Y,switch[0])
+                
                         
         except Exception as e:
             
