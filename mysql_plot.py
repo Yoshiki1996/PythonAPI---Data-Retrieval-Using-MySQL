@@ -70,7 +70,7 @@ SELECT TIME_TO_SEC(TIMEDIFF('12:01:00', '12:00:00')) diff;
 connection = pymysql.connect(host="localhost",
                             user='root',
                             passwd='ditpwd',
-                            db="DATA")
+                            db="DATA2")
 
 # Initializing the ouimeaux environment
 env = Environment()
@@ -123,19 +123,20 @@ class PLOT:
  
     def TIME_IND(self,switch,last_index):
         '''This function will compute the time difference
-        between each currentpower and store it in the table IND_Insight
+        between each currentpower and store it in the table IND_Insight.
+        It also stores the required indices for plotting
         '''
         cursorObject = connection.cursor()  
         last_ind = str(last_index)
         
         # We must be careful not to keep on storing the same values
-        ROW = "Select last_index from IND_" + switch[0]
+        ROW = "Select mysql_index from IND_" + switch[0]
         cursorObject.execute(ROW)
         prev_index = cursorObject.fetchall()
         
         if self.empty(prev_index) == True:
-            insertStatement = ("INSERT INTO IND_"+switch[0]+"(last_index) "
-                                "VALUES("+last_ind+")")
+            insertStatement = ("INSERT INTO IND_"+switch[0]+"(DATE, mysql_index,python_index) "
+                                "VALUES(CURDATE(),"+last_ind+",0)")
                                 
             cursorObject.execute(insertStatement)
             
@@ -143,8 +144,8 @@ class PLOT:
             return 
             
         else:
-            insertStatement = ("INSERT INTO IND_"+switch[0]+"(last_index) "
-                                "VALUES("+last_ind+")")
+            insertStatement = ("INSERT INTO IND_"+switch[0]+"(DATE, mysql_index,python_index) "
+                                "VALUES(CURDATE(),"+last_ind+" ,"+str(len(prev_index))+")")
                                 
             cursorObject.execute(insertStatement)
     
@@ -251,10 +252,8 @@ class PLOT:
         # list containing currentpower 
         current_power = self.store_currentpower(cp_rows)
         
-        # Generate actual plot
-        self.MAKE_PLOT(time_del,current_power)
         # Generate plot
-        # PLOT_FINALDATA(time_del,current_power)
+        self.PLOT_FINALDATA(time_del,current_power,switch[0])
     
     def smooth(self,X,Y,spacing):
         # First approach in obtaining max and min values 
@@ -442,7 +441,7 @@ class PLOT:
                 switch = self.SWITCH(list(env.list_switches())[i])
                 
                 # Rows are stored in a tuple
-                ROW = "Select last_index from IND_" + switch[0]
+                ROW = "Select mysql_index from IND_" + switch[0]
                 cursorObject.execute(ROW)
                 index_rows = cursorObject.fetchall()
                 
@@ -461,11 +460,14 @@ class PLOT:
                     end_index = len(cursorObject.fetchall())
                     self.TIME_IND(switch,end_index)
                     
-                    ROW = "Select last_index from IND_" + switch[0] 
+                    ROW = "Select mysql_index from IND_" + switch[0] 
                     cursorObject.execute(ROW)
                     
                     # Initiate the starting index to whatever is needed
-                    start_index = cursorObject.fetchall()[-2][0]
+                    # If you want to see all the data from the start in 
+                    # certain day, then make:
+                    # start_index = 0
+                    start_index = cursorObject.fetchall()[0][0]
                     
                     # Generate the plot from the last stored value
                     X,Y = self.fetch_data(switch,start_index,end_index)
