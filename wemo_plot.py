@@ -70,7 +70,7 @@ SELECT TIME_TO_SEC(TIMEDIFF('12:01:00', '12:00:00')) diff;
 connection = pymysql.connect(host="localhost",
                             user='root',
                             passwd='ditpwd',
-                            db="DATA2")
+                            db="DATA")
 
 # Initializing the ouimeaux environment
 env = Environment()
@@ -237,6 +237,7 @@ class PLOT:
         
         # A list which contains the difference between each successive time
         time_del = self.store_time_diff(time_rows)
+        # print(time_del)
         
         # CALL THE TIME_DIFF FUNCTION TO STORE THE LAST
         # USED INDEX
@@ -251,6 +252,7 @@ class PLOT:
         
         # list containing currentpower 
         current_power = self.store_currentpower(cp_rows)
+        # print(current_power)
         
         # Generate plot
         self.PLOT_FINALDATA(time_del,current_power,switch[0])
@@ -326,6 +328,7 @@ class PLOT:
                         pass
                 
                 elif i == xy_pairs.shape[0]-2 and XY_TEMP[-2][1] == 0:
+                    print(XY_TEMP)
                     XY.append(XY_TEMP[0])
                     XY.append(XY_TEMP[-1])
                 
@@ -353,8 +356,8 @@ class PLOT:
         '''This function obtains the final data points using the smoothing 
         function, spline, provided by Python scipy module'''
         
-        XP_SMOOTH,YP_SMOOTH = self.smooth(X,Y,200)
-        X_REFINED,Y_REFINED = refined_data(XP_SMOOTH,YP_SMOOTH)
+        XP_SMOOTH,YP_SMOOTH = self.smooth(XP,YP,200)
+        X_REFINED,Y_REFINED = self.refined_data(XP_SMOOTH,YP_SMOOTH)
         XY_TEMP = np.vstack((X_REFINED,Y_REFINED)).T
         XY = np.array(self.xintervals(XP,YP))
         
@@ -396,16 +399,17 @@ class PLOT:
         else:
             return np.vstack((XY,XY_TEMP))
     
-    def PLOT_FINALDATA_SMOOTHING(self,XP,YP):
+    def PLOT_FINALDATA_SMOOTHING(self,XP,YP,switch_name):
         '''function which plots the points using python spline'''
         
         XY = self.final_data(XP,YP)
         x,y = XY[np.argsort(XY[:,0])].T
         # print((XY[np.argsort(XY[:,0])].T).shape[1])
-        plt.plot(x,y)
+        plt.plot(x,y,label = switch_name)
         plt.ylabel('currentpower [W]')
         plt.xlabel('time [s]')
         plt.title('currentpower vs time')
+        plt.legend(bbox_to_anchor=(0.75, 0.9), loc=2, borderaxespad=0.)
         plt.show()
     
     def PLOT_FINALDATA(self,XP,YP,switch_name):
@@ -467,11 +471,14 @@ class PLOT:
                     # If you want to see all the data from the start in 
                     # certain day, then make:
                     # start_index = 0
-                    start_index = cursorObject.fetchall()[0][0]
+                    
+                    # Otherwise, use the corresponding python_index stored in
+                    # mysql_index in MYSQL table IND_[SWITCHNAME].
+                    # start_index = cursorObject.fetchall()[0][0]
                     
                     # Generate the plot from the last stored value
                     X,Y = self.fetch_data(switch,start_index,end_index)
-                    print(X,Y)
+                    # print(X,Y)
                     
                     '''Generate the plot which gives the smooth curves'''
                     
@@ -496,13 +503,13 @@ class PLOT:
                     
                     '''Generate the final plot using the spline function'''
                     
-                    # self.PLOT_FINALDATA_SMOOTHING(X,Y)
+                    self.PLOT_FINALDATA_SMOOTHING(X,Y,switch[0])
 
 
                     '''Generate the final plot containing all the ON state points
                        and only the beginning and ending points when currentpower = 0'''
                     
-                    self.PLOT_FINALDATA(X,Y,switch[0])
+                    # self.PLOT_FINALDATA(X,Y,switch[0])
                 
                         
         except Exception as e:
