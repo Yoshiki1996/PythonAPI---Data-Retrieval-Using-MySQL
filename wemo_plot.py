@@ -467,8 +467,8 @@ class PLOT:
                     ROW = "Select mysql_index from IND_" + switch[0] 
                     cursorObject.execute(ROW)
                 
-                    # If you want to see all the data from the start in 
-                    # certain day, then make:
+                    # If you want to see all the data from the start to last
+                    # then make:
                     # start_index = 0
                     
                     # Otherwise, use the corresponding python_index stored in
