@@ -13,9 +13,8 @@ wemo_data: Retrieves all information such as state, currentpower, total on time,
             
 wemo_plot: Retrieves the data and plots currentpower vs. time
 
-How wemo_plot works: For the first time a plot is generated, you will obtain a plot from the beginning to
-end of the dataset. If you run wemo_data multiple times (eg. running code on different days) notice that 
-in the table generated in mysql, IND\_[SWITCH_NAME] there are two columns of interest: mysql_index and python_index. mysql_index fetches the data index corresponding to that particular day, and by setting start_index = cursorObject.fetchall()[python_index][0] (line 477), you can plot starting from that data. All is explained starting
+# How wemo_plot works: 
+For the first time a plot is generated, you will obtain a plot from the beginning to end of the dataset. If you run wemo_data multiple times (eg. running code on different days) notice that in the table generated in mysql, IND\_[SWITCH_NAME] there are two columns of interest: mysql_index and python_index. mysql_index fetches the data index corresponding to that particular day, and by setting start_index = cursorObject.fetchall()[python_index][0] (line 477), you can plot starting from that data. All is explained starting
 from line(436).
 
 # Requirements:
