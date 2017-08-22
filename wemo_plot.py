@@ -5,7 +5,7 @@ There are three graphs:
 MAKE_PLOT(X,Y):
 This plots the currentpower vs. time from the original set of data. This may
 not be optimal if one wants to minimize the amount of data sets for optimizing
-memory space
+memory space.
 
 PLOT_FINALDATA_SMOOTHING(X,Y):
 This plots the currentpower vs. time first smoothing out the original data set.
@@ -16,7 +16,7 @@ keep the currentpower drained by the appliance as is, then it may not be optimal
 PLOT_FINALDATA(X,Y):
 This plots the currentpower vs. time first storing the point where 
 currentpower = 0[W]. It will neglect all the other points with 0[W] until there
-is a change in current - this interval will then be stored. It is the same plot#
+is a change in current - this interval will then be stored. It is the same plot
 as MAKE_PLOT(X,Y) reducing the amount of unnecessary data.
 
 '''
@@ -449,15 +449,15 @@ class PLOT:
                 cursorObject.execute(ROW)
                 index_rows = cursorObject.fetchall()
                 
-                if self.empty(index_rows) == True or len(index_rows) == 1:
-                    ''' This part of the code only executes once - when we generate a plot
+                if self.empty(index_rows) == True:
+                    ''' This part of the code executes when we generate a plot
                     the first time'''
-                    #print('hi')
                     self.CPT_SWITCH(switch)
                     
                 else:
-                    ''' This part of the code is executed every time after the first if
-                    statement'''
+                    ''' This part of code executes if we keep storing new data.
+                    By default it plots from the time the second dataset was collected,
+                    but you can always change that accordingly described below'''
                     
                     ROW = "Select TIME from " + switch[0]
                     cursorObject.execute(ROW)
@@ -466,35 +466,18 @@ class PLOT:
                     
                     ROW = "Select mysql_index from IND_" + switch[0] 
                     cursorObject.execute(ROW)
-                    
-                    # Initiate the starting index to whatever is needed
+                
                     # If you want to see all the data from the start in 
                     # certain day, then make:
                     # start_index = 0
                     
                     # Otherwise, use the corresponding python_index stored in
                     # mysql_index in MYSQL table IND_[SWITCHNAME].
-                    # start_index = cursorObject.fetchall()[0][0]
+                    python_index = 0
+                    start_index = cursorObject.fetchall()[python_index][0]
                     
                     # Generate the plot from the last stored value
                     X,Y = self.fetch_data(switch,start_index,end_index)
-                    # print(X,Y)
-                    
-                    '''Generate the plot which gives the smooth curves'''
-                    
-                    # XP_SMOOTH,YP_SMOOTH = self.smooth(X,Y,200)
-                    # plt.plot(XP_SMOOTH,YP_SMOOTH)
-                    # plt.show()
-
-
-                    '''Generate the points where the max/min values lie from the 
-                       Smoothed out curve.'''
-                    
-                    # X_REFINED,Y_REFINED = self.refined_data(XP_SMOOTH,YP_SMOOTH)
-                    # plt.plot(X_REFINED,Y_REFINED,'ro')
-                    # plt.plot(XP_SMOOTH,YP_SMOOTH) 
-                    # plt.show() 
-                    
                     
                     '''Generate the actual plot from the Wemo Devices'''
                     
@@ -503,14 +486,13 @@ class PLOT:
                     
                     '''Generate the final plot using the spline function'''
                     
-                    self.PLOT_FINALDATA_SMOOTHING(X,Y,switch[0])
+                    # self.PLOT_FINALDATA_SMOOTHING(X,Y,switch[0])
 
 
                     '''Generate the final plot containing all the ON state points
-                       and only the beginning and ending points when currentpower = 0'''
+                    and only the beginning and ending points when currentpower = 0'''
                     
-                    # self.PLOT_FINALDATA(X,Y,switch[0])
-                
+                    self.PLOT_FINALDATA(X,Y,switch[0])
                         
         except Exception as e:
             
@@ -519,6 +501,8 @@ class PLOT:
 if __name__ == '__main__':
     
     PLOT = PLOT()
+    # Note: By default what is plotted is from the function PLOT_FINALDATA.
+    # If you want to change this, then uncomment accordingly as indicated above.
     PLOT.CREATE_PLOT()    
     
     
