@@ -17,6 +17,24 @@ wemo_plot: Retrieves the data and plots currentpower vs. time
 For the first time a plot is generated, you will obtain a plot from the beginning to end of the dataset. If you run wemo_data multiple times (eg. running code on different days) notice that in the table generated in mysql, IND\_[SWITCH_NAME] there are two columns of interest: mysql_index and python_index. mysql_index fetches the data index corresponding to that particular day, and by setting start_index = cursorObject.fetchall()[python_index][0] (line 477), you can plot starting from that data. All is explained starting
 from line(436).
 
+# Different types of plots:
+MAKE_PLOT(X,Y):
+This plots the currentpower vs. time from the original set of data. This may
+not be optimal if one wants to minimize the amount of data sets for optimizing
+memory space.
+
+PLOT_FINALDATA_SMOOTHING(X,Y):
+This plots the currentpower vs. time first smoothing out the original data set.
+The maximum value is then stored using argmax which will be a reference point to 
+be connected. This will reduce the amount of dataset although if one wants to 
+keep the currentpower drained by the appliance as is, then it may not be optimal.
+
+PLOT_FINALDATA(X,Y):
+This plots the currentpower vs. time first storing the point where 
+currentpower = 0[W]. It will neglect all the other points with 0[W] until there
+is a change in current - this interval will then be stored. It is the same plot
+as MAKE_PLOT(X,Y) reducing the amount of unnecessary data.
+
 # Requirements:
 1) Python Version 3 or higher
 2) A database named, 'DATA' in MySQL
