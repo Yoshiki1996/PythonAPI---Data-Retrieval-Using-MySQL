@@ -405,7 +405,7 @@ class PLOT:
         XY = self.final_data(XP,YP)
         x,y = XY[np.argsort(XY[:,0])].T
         # print((XY[np.argsort(XY[:,0])].T).shape[1])
-        plt.plot(x,y,label = switch_name)
+        plt.plot(x,y,label = switch_name + ' S')
         plt.ylabel('currentpower [W]')
         plt.xlabel('time [s]')
         plt.title('currentpower vs time')
@@ -473,7 +473,7 @@ class PLOT:
                     
                     # Otherwise, use the corresponding python_index stored in
                     # mysql_index in MYSQL table IND_[SWITCHNAME].
-                    python_index = 0
+                    python_index = 1
                     start_index = cursorObject.fetchall()[python_index][0]
                     
                     # Generate the plot from the last stored value
