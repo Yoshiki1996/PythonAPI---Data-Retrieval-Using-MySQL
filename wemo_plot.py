@@ -473,7 +473,7 @@ class PLOT:
                     
                     # Otherwise, use the corresponding python_index stored in
                     # mysql_index in MYSQL table IND_[SWITCHNAME].
-                    python_index = 1
+                    python_index = 0
                     start_index = cursorObject.fetchall()[python_index][0]
                     
                     # Generate the plot from the last stored value
